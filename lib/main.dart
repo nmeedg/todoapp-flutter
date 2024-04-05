@@ -32,47 +32,56 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  late TextEditingController _textController;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void submitText() {
+    debugPrint(_textController.text);
   }
 
+@override
+  void initState() {
+    _textController = TextEditingController();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
-        title: Text(widget.title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
+        title: Text(
+          widget.title,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-         // mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(
+              controller: _textController,
               decoration: InputDecoration(
-                label: Text("Search somethings"),
-                suffixIcon: Icon(Icons.search)
-              ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                  suffixIcon: Icon(Icons.search),
+                  hintText: "Enter the title or words of notes",
+                  contentPadding: EdgeInsets.all(15)),
               textCapitalization: TextCapitalization.sentences,
-              
             ),
-
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            SizedBox(height: 20,),
+            Expanded(
+                child: ListView.separated(
+                    itemBuilder: (ctx, index) => ListTile(
+                          title: Text("Item $index"),
+                          trailing: Icon(Icons.more_vert_rounded),
+                        ),
+                    separatorBuilder: (ctx, index) => Divider(),
+                    itemCount: 15))
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: submitText,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
