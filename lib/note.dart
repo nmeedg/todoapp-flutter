@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:todoapp/task.dart';
 
 part 'note.g.dart';
 
@@ -12,5 +13,12 @@ class Note extends HiveObject {
 
   @HiveField(2)
   DateTime date;
-  Note(this.title, this.description, this.date);
+
+  @HiveField(3)
+  bool isFavour;
+
+  @HiveField(4)
+  List<Task> listOfTasks=[];
+
+  Note(this.title, this.description, this.date,[this.isFavour = false]);
 }

@@ -2,13 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:todoapp/detail.dart';
 import 'package:todoapp/like.dart';
+import 'package:todoapp/task.dart';
 
 import 'note.dart';
 
 void main() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(NoteAdapter());
+  Hive
+  ..registerAdapter(NoteAdapter())
+  ..registerAdapter(TaskAdapter());
+  
   await Hive.openBox<Note>("notesBox");
   runApp(const MyApp());
 }
@@ -115,7 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15))),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Get.to(()=> Detail());
+                            },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -131,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   contentPadding: EdgeInsets.all(5),
                                 ),
                                 Text(
-                                  mybox.getAt(index)!.date.toIso8601String(),
+                                  Jiffy.parseFromDateTime(mybox.getAt(index)!.date).yMMMMEEEEdjm,
                                   style: TextStyle(color: Colors.grey),
                                 )
                               ],
@@ -228,6 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             _tempDescController.text,
                             DateTime.now(),
                           ));
+                          
                         } else {
                           print("Note mot vide");
                         }
