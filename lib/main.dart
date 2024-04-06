@@ -1,8 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todoapp/like.dart';
 
-void main() {
+import 'note.dart';
+
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(NoteAdapter());
+  await Hive.openBox<Note>("notesBox");
   runApp(const MyApp());
 }
 
@@ -35,14 +42,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _textController;
-
+  late TextEditingController _tempTextController;
+  late TextEditingController _tempDescController;
   void submitText() {
     debugPrint(_textController.text);
   }
 
+  late Box<Note> box;
+
   @override
   void initState() {
     _textController = TextEditingController();
+    _tempDescController = TextEditingController();
+    _tempTextController = TextEditingController();
+    box = Hive.box("notesBox");
     super.initState();
   }
 
@@ -56,7 +69,14 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.heart_fill,color: Colors.red,))
+          IconButton(
+              onPressed: () {
+                Get.to(()=> Like());
+              },
+              icon: Icon(
+                CupertinoIcons.heart_fill,
+                color: Colors.red,
+              ))
         ],
       ),
       body: Padding(
@@ -78,11 +98,20 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 20,
             ),
             Expanded(
-                child: ListView.separated(
-                    itemBuilder: (ctx, index) => Container(
+                child: ValueListenableBuilder(
+                    valueListenable: box.listenable(),
+                    builder: (ctx, mybox, _) {
+                      if (mybox.length == 0) {
+                        return Center(
+                          child: Text("List of notes is empty"),
+                        );
+                      }
+                      return ListView.separated(
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (ctx2, index) => Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
+                              color: Colors.grey.shade100,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15))),
                           child: InkWell(
@@ -93,19 +122,28 @@ class _MyHomePageState extends State<MyHomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ListTile(
-                                  title: Text("Note ${index+1}",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  title: Text(
+                                    mybox.getAt(index)!.title,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
                                   trailing: Icon(Icons.more_vert_rounded),
                                   contentPadding: EdgeInsets.all(5),
                                 ),
-                                Text("27 janvier 2024",style: TextStyle(color: Colors.grey),)
+                                Text(
+                                  mybox.getAt(index)!.date.toIso8601String(),
+                                  style: TextStyle(color: Colors.grey),
+                                )
                               ],
                             ),
                           ),
                         ),
-                    separatorBuilder: (ctx, index) => SizedBox(
+                        separatorBuilder: (ctx, index) => SizedBox(
                           height: 10,
                         ),
-                    itemCount: 15))
+                        itemCount: mybox.length,
+                      );
+                    }))
           ],
         ),
       ),
@@ -124,12 +162,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextField(
+                        onChanged: (textValue) {
+                          setState(() {});
+                        },
+                        controller: _tempTextController,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15))),
                             label: Text("Name"),
                             hintText: "Enter the title",
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  _tempTextController.clear();
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  size: 17,
+                                )),
                             contentPadding: EdgeInsets.all(15)),
                         textCapitalization: TextCapitalization.sentences,
                       ),
@@ -137,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 10,
                       ),
                       TextField(
+                        controller: _tempDescController,
                         maxLines: 3,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
@@ -157,6 +208,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(18))),
                       onPressed: () {
+                        _tempTextController.clear();
+                        _tempDescController.clear();
                         Get.back();
                       },
                       child: Text(
@@ -168,14 +221,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       minWidth: 100,
                       color: Colors.indigo,
                       height: 47,
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_tempTextController.text != "") {
+                          box.add(Note(
+                            _tempTextController.text,
+                            _tempDescController.text,
+                            DateTime.now(),
+                          ));
+                        } else {
+                          print("Note mot vide");
+                        }
+                        _tempTextController.clear();
+                        _tempDescController.clear();
+                        Get.back();
+                      },
                       child: Text(
                         "Ok",
                         style: TextStyle(color: Colors.white),
                       ),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(18))),
-                    )
+                    ),
                   ],
                   //        icon: Icon(Icons.new_label),
                 );
