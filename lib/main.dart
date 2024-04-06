@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   BorderRadius.all(Radius.circular(15))),
                           child: InkWell(
                             onTap: () {
-                              Get.to(()=> Detail());
+                              Get.to(()=> Detail(myindex: index,),transition: Transition.fadeIn);
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -138,10 +138,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                   trailing: Icon(Icons.more_vert_rounded),
                                   contentPadding: EdgeInsets.all(5),
                                 ),
-                                Text(
-                                  Jiffy.parseFromDateTime(mybox.getAt(index)!.date).yMMMMEEEEdjm,
-                                  style: TextStyle(color: Colors.grey),
-                                )
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      Jiffy.parseFromDateTime(mybox.getAt(index)!.date).yMMMMEEEEdjm,
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal:13),
+                                      child: Text("2/${mybox.getAt(index)!.listOfTasks.length}",style: TextStyle(color: Colors.blue),),
+                                    )
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -245,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Get.back();
                       },
                       child: Text(
-                        "Ok",
+                        "Validate",
                         style: TextStyle(color: Colors.white),
                       ),
                       shape: RoundedRectangleBorder(
