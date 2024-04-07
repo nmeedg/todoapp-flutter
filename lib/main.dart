@@ -91,8 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 Get.to(() => Like());
               },
               icon: Icon(
-                CupertinoIcons.heart_fill,
-                color: Colors.red,
+                CupertinoIcons.heart,
+                color: Colors.indigo,
               ))
         ],
       ),
