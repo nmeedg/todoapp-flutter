@@ -12,9 +12,9 @@ import 'note.dart';
 void main() async {
   await Hive.initFlutter();
   Hive
-  ..registerAdapter(NoteAdapter())
-  ..registerAdapter(TaskAdapter());
-  
+    ..registerAdapter(NoteAdapter())
+    ..registerAdapter(TaskAdapter());
+
   await Hive.openBox<Note>("notesBox");
   runApp(const MyApp());
 }
@@ -54,6 +54,17 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint(_textController.text);
   }
 
+  int countChecked(List<Task> tasks) {
+    int count = 0;
+    for (var element in tasks) {
+      if (element.isChecked) {
+        count++;
+      }
+    }
+
+    return count;
+  }
+
   late Box<Note> box;
 
   @override
@@ -77,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                Get.to(()=> Like());
+                Get.to(() => Like());
               },
               icon: Icon(
                 CupertinoIcons.heart_fill,
@@ -114,44 +125,202 @@ class _MyHomePageState extends State<MyHomePage> {
                       }
                       return ListView.separated(
                         physics: BouncingScrollPhysics(),
-                        itemBuilder: (ctx2, index) => Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15))),
-                          child: InkWell(
-                            onTap: () {
-                              Get.to(()=> Detail(myindex: index,),transition: Transition.fadeIn);
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ListTile(
-                                  title: Text(
-                                    mybox.getAt(index)!.title,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                        itemBuilder: (ctx2, index) => Dismissible(
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.endToStart) {
+                              bool? res = await showDialog(
+                                  context: context,
+                                  builder: (ctx) {
+                                    return AlertDialog.adaptive(
+                                      title: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Trash",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(width: 5,),
+                                          Icon(Icons.delete)
+                                        ],
+                                      ),
+                                    
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                              "are you want to delete note :"),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Center(
+                                            child: Text(
+                                              "${mybox.getAt(index)!.title}",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Get.back(result: false);
+                                          },
+                                          child: Text(
+                                            "Cancel",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            await mybox.getAt(index)!.delete();
+                                            Get.back(result: true);
+                                          },
+                                          child: Text(
+                                            "Delete",
+                                            style:
+                                                TextStyle(color: Colors.indigo),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                              return res?? false;
+                            } else {
+                              Get.to(
+                                  Detail(
+                                    myindex: index,
                                   ),
-                                  trailing: Icon(Icons.more_vert_rounded),
-                                  contentPadding: EdgeInsets.all(5),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      Jiffy.parseFromDateTime(mybox.getAt(index)!.date).yMMMMEEEEdjm,
-                                      style: TextStyle(color: Colors.grey),
+                                  transition: Transition.zoom);
+                            }
+                          },
+                          background: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.indigoAccent,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Visibility(
+                                    visible: mybox.getAt(index)!.isFavour,
+                                    replacement: Icon(
+                                      CupertinoIcons.heart,
+                                      color: Colors.red,
+                                      size: 25,
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal:13),
-                                      child: Text("2/${mybox.getAt(index)!.listOfTasks.length}",style: TextStyle(color: Colors.blue),),
-                                    )
-                                  ],
-                                ),
-                              ],
+                                    child: Icon(
+                                      CupertinoIcons.heart_fill,
+                                      color: Colors.red,
+                                      size: 25,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "Edit note",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          secondaryBackground: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "Move to trash",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          key: Key(index.toString()),
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(
+                                    () => Detail(
+                                          myindex: index,
+                                        ),
+                                    transition: Transition.fadeIn);
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      mybox.getAt(index)!.title,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    trailing: Icon(Icons.more_vert_rounded),
+                                    contentPadding: EdgeInsets.all(5),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        Jiffy.parseFromDateTime(
+                                                mybox.getAt(index)!.date)
+                                            .yMMMMEEEEdjm,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 13),
+                                        child: Text(
+                                          "${countChecked(mybox.getAt(index)!.listOfTasks)}/${mybox.getAt(index)!.listOfTasks.length}",
+                                          style: TextStyle(color: Colors.blue),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -245,7 +414,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             _tempDescController.text,
                             DateTime.now(),
                           ));
-                          
                         } else {
                           print("Note mot vide");
                         }
