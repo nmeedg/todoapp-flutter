@@ -61,7 +61,7 @@ class _LikeState extends State<Like> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Favour note",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
         ),
@@ -70,7 +70,7 @@ class _LikeState extends State<Like> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
               color: Colors.indigo,
             )),
@@ -82,19 +82,19 @@ class _LikeState extends State<Like> {
             Expanded(
               child: Visibility(
                 visible: !_isLoading,
-                replacement: Center(
+                replacement: const Center(
                   child: CircularProgressIndicator(),
                 ),
-                child: likeNote.length == 0
-                    ? Center(child: Text("Your favorite list is empty"))
+                child: likeNote.isEmpty
+                    ? const Center(child: Text("Your favorite list is empty"))
                     : ListView.separated(
                         itemBuilder: (ctx, index) {
                           return Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                                 color: Colors.grey.shade100,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(15))),
+                                    const BorderRadius.all(Radius.circular(15))),
                             child: InkWell(
                               onTap: () {
                                 Get.to(
@@ -112,11 +112,11 @@ class _LikeState extends State<Like> {
                                   ListTile(
                                     title: Text(
                                       likeNote[index].title,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    trailing: Icon(Icons.more_vert_rounded),
-                                    contentPadding: EdgeInsets.all(5),
+                                    trailing: const Icon(Icons.more_vert_rounded),
+                                    contentPadding: const EdgeInsets.all(5),
                                   ),
                                   Row(
                                     mainAxisAlignment:
@@ -126,14 +126,14 @@ class _LikeState extends State<Like> {
                                         Jiffy.parseFromDateTime(
                                                 likeNote[index].date)
                                             .yMMMMEEEEdjm,
-                                        style: TextStyle(color: Colors.grey),
+                                        style: const TextStyle(color: Colors.grey),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 13),
                                         child: Text(
                                           "${countChecked(likeNote[index].listOfTasks)}/${likeNote[index].listOfTasks.length}",
-                                          style: TextStyle(color: Colors.blue),
+                                          style: const TextStyle(color: Colors.blue),
                                         ),
                                       )
                                     ],
@@ -144,7 +144,7 @@ class _LikeState extends State<Like> {
                           );
                         },
                         separatorBuilder: (ctx, index) {
-                          return SizedBox(
+                          return const SizedBox(
                             height: 10,
                           );
                         },

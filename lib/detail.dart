@@ -39,7 +39,7 @@ class _DetailState extends State<Detail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Modify note",
           style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
         ),
@@ -52,11 +52,11 @@ class _DetailState extends State<Detail> {
                 });
               },
               icon: newNote.isFavour
-                  ? Icon(
+                  ? const Icon(
                       CupertinoIcons.heart_fill,
                       color: Colors.red,
                     )
-                  : Icon(
+                  : const Icon(
                       CupertinoIcons.heart,
                       color: Colors.red,
                     ))
@@ -65,7 +65,7 @@ class _DetailState extends State<Detail> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
               color: Colors.indigo,
             )),
@@ -81,7 +81,7 @@ class _DetailState extends State<Detail> {
                     context: context,
                     builder: (ctx) {
                       return AlertDialog(
-                        title: Text(
+                        title: const Text(
                           "New Task",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -93,7 +93,7 @@ class _DetailState extends State<Detail> {
                           child: TextField(
                             controller: _tempTaskController,
                             textCapitalization: TextCapitalization.sentences,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                                 contentPadding: EdgeInsets.all(17),
                                 label: Text("name"),
                                 hintText: "Your task name",
@@ -107,13 +107,13 @@ class _DetailState extends State<Detail> {
                             minWidth: 100,
                             color: Colors.red,
                             height: 46,
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(18))),
                             onPressed: () {
                               Get.back();
                             },
-                            child: Text(
+                            child: const Text(
                               "Cancel",
                               style: TextStyle(color: Colors.white),
                             ),
@@ -122,7 +122,7 @@ class _DetailState extends State<Detail> {
                             minWidth: 100,
                             color: Colors.indigoAccent,
                             height: 46,
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(18))),
                             onPressed: () {
@@ -135,7 +135,7 @@ class _DetailState extends State<Detail> {
                               _tempTaskController.clear();
                               Get.back();
                             },
-                            child: Text(
+                            child: const Text(
                               "Create",
                               style: TextStyle(color: Colors.white),
                             ),
@@ -144,8 +144,8 @@ class _DetailState extends State<Detail> {
                       );
                     });
               },
-              padding: EdgeInsets.all(8),
-              icon: Row(
+              padding: const EdgeInsets.all(8),
+              icon: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
@@ -172,8 +172,8 @@ class _DetailState extends State<Detail> {
                 await newNote.save();
                 Get.back();
               },
-              padding: EdgeInsets.all(8),
-              icon: Row(
+              padding: const EdgeInsets.all(8),
+              icon: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
@@ -202,27 +202,27 @@ class _DetailState extends State<Detail> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Title",
               style: TextStyle(color: Colors.grey),
             ),
             //   SizedBox(height: 10,),
             TextField(
               controller: _titleCotroller,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            Text(
+            const Text(
               "List of task",
               style: TextStyle(color: Colors.grey),
             ),
             Visibility(
-              visible: listOftask.length != 0,
+              visible: listOftask.isNotEmpty,
               replacement: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
@@ -234,11 +234,11 @@ class _DetailState extends State<Detail> {
                 child: ListView.builder(
                   itemCount: listOftask.length,
                   itemBuilder: (ctx, index) => Container(
-                    padding: EdgeInsets.all(5),
-                    margin: EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.symmetric(vertical: 5),
                     decoration: BoxDecoration(
                         color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                        borderRadius: const BorderRadius.all(Radius.circular(20))),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -253,20 +253,20 @@ class _DetailState extends State<Detail> {
                                   listOftask[index].isChecked = !listOftask[index].isChecked;
                                 });
                               },
-                              icon: listOftask[index].isChecked ? Icon(
+                              icon: listOftask[index].isChecked ? const Icon(
                                 Icons.check_circle,
                                 color: Colors.indigo,
-                              ) : Icon(
+                              ) : const Icon(
                                 Icons.check_circle_outline_outlined,
                                 color: Colors.indigo,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             Text(
                               listOftask[index].title,
-                              style: TextStyle(fontSize: 15),
+                              style: const TextStyle(fontSize: 15),
                             ),
                           ],
                         ),
@@ -276,7 +276,7 @@ class _DetailState extends State<Detail> {
                                 listOftask.removeAt(index);
                               });
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.delete_outline_rounded,
                               color: Colors.red,
                             ))
@@ -287,14 +287,14 @@ class _DetailState extends State<Detail> {
               ),
             ),
 
-            Text(
+            const Text(
               "Description",
               style: TextStyle(color: Colors.grey),
             ),
             Expanded(
               child: TextField(
                 controller: _descController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: InputBorder.none,
                 ),
                 expands: true,
