@@ -686,12 +686,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             DateTime.now(),
                           ));
                         } else {
-                          Get.showSnackbar(
-                            const GetSnackBar(
-                              message: "Note can't empty",
-                            )
-                          );
-                        
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            backgroundColor: Colors.indigo,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              )
+                            ),
+                            content: Center(child: Text("Note can't have empty title",style: TextStyle(color: Colors.white),))));
                         }
                         _tempTextController.clear();
                         _tempDescController.clear();
